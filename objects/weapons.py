@@ -10,10 +10,10 @@ class Weapon:
     def get_damage(self):
         return self.damage
     
-    def set_damage(self, damage):
-        self.damage = damage
-        
     def set_name(self, name):
         self.name = name
+        
+    def set_damage(self, damage):
+        self.damage = damage
         
     
