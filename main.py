@@ -24,7 +24,7 @@ def character_creation(name, class_name="default", level=1, health=100, health_m
         global player1
         player1 = Character("Player", class_name, level, health, health_max, 40, 40, xp_max, xp, strength, critical, armor, turn)
         player1.weapon = Weapon("Sword", 10)
-        player1.magic = Magic("HolyBolt", 30, 1, 20)
+        player1.magic = np.random.choice([Magic("HolyBolt", 35, 1, 20), Magic("Fireball", 25, 1, 15), Magic("Icebolt", 30, 1, 20)])
         player1.potion = Potion("Health Potion", 40, 0, 1)
     elif name == "Monster":
         global monster1
