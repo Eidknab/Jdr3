@@ -1,5 +1,6 @@
 from objects.characters import Character
 from objects.weapons import Weapon
+from objects.magic import Magic
 import os
 import time
 import sys
@@ -17,11 +18,12 @@ def new_game():
     map_creation()
 
 # Characters Creation (Monsters and Player), Works with the Character class in objects/characters.py
-def character_creation(name, class_name="default", level=1, health=100, health_max=100, mana=0, mana_max=0, xp=0, xp_max=100, strength=10, critical=5, armor=1, turn=1):
+def character_creation(name, class_name="default", level=1, health=100, health_max=100, mana=0, mana_max=0, xp=0, xp_max=100, strength=15, critical=5, armor=1, turn=1):
     if name == "Player":
         global player1
-        player1 = Character("Player", class_name, level, health, health_max, mana, mana_max, xp_max, xp, strength, critical, armor, turn)
-        player1.weapon = Weapon("Sword", 5)
+        player1 = Character("Player", class_name, level, health, health_max, 40, 40, xp_max, xp, strength, critical, armor, turn)
+        player1.weapon = Weapon("Sword", 10)
+        player1.magic = Magic("HolyBolt", 30, 1, 20)
     elif name == "Monster":
         global monster1
         if class_name == "default":
@@ -31,7 +33,8 @@ def character_creation(name, class_name="default", level=1, health=100, health_m
         elif player1.get_level() == 1:
             level = player1.get_level() + np.random.randint(0, 2)
         monster1 = Character("Monster", class_name, level, health, health_max, mana, mana_max, xp_max, xp, strength, critical, armor, turn)
-        Character.calc_xp(monster1)
+        for i in range(0, monster1.get_level()):
+            Character.level_up(monster1)
         
 # Create a new map (change the map_size variable to change the size of the map)
 def map_creation():
@@ -113,46 +116,72 @@ def map_menu():
 # Create a new monster and start a fight screen
 def fight_screen():
     character_creation("Monster", turn=0)
+    i = 0
     while monster1.get_health() > 0 and player1.get_health() > 0:
         clear_screen()
         character_display(player1)
-        display_versus(0)
+        if i == 0:
+            display_versus(1)
+            i += 1
+        else:
+            display_versus(0)
         character_display(monster1)
         fight_menu()
         
 # Display the action menu for the fight screen
 def fight_menu():
-    print("\n1.Attack 2.Magic 3.Potions 4.Run")
+    if (player1.has_magic() is not None) and (player1.get_mana() >= player1.magic.get_mana_cost()):
+        print(f"\n1.Attack 2.{player1.magic.get_name()}({player1.magic.get_level()}) 3.Potions 4.Run")
+    else:
+        print(f"\n1.Attack 3.Potions 4.Run")
     while True:
         select = input("? Votre choix : ") 
         if select == "1":
-            turn_test()
+            turn_test(magic=False)
+            break
+        if select == "2" and player1.get_mana() >= player1.magic.get_mana_cost():
+            turn_test(magic=True)
+            break
+        if select == "3":
+            player1.set_health(player1.get_health() + 40)
+            if player1.get_health() > player1.get_health_max():
+                player1.set_health(player1.get_health_max())
             break
         if select == "4" or select == "q" or select == "Q":
             map_screen()
             break
-        
-def turn_test():
+        else:
+            pass
+
+def turn_test(magic):
     if player1.get_turn() >= monster1.get_turn():
-        player1.attack(monster1)
-        time.sleep(0.5)
-        is_monster_alive()
-        monster1.attack(player1)
-        time.sleep(2)
-        is_player_alive()
+        if magic is False:
+            player1.attack(monster1)
+            time.sleep(0.5)
+            is_monster_alive()
+            monster1.attack(player1)
+            time.sleep(3)
+            is_player_alive()
+        if magic is True:
+            player1.magic_attack(monster1)
+            time.sleep(0.5)
+            is_monster_alive()
+            monster1.attack(player1)
+            time.sleep(3)
+            is_player_alive()
     if player1.get_turn() < monster1.get_turn():
         print(f"{monster1.get_name()} got initiative !")
         monster1.attack(player1)
         time.sleep(0.5)
         is_player_alive()
         player1.attack(monster1)
-        time.sleep(2)
+        time.sleep(3)
         is_monster_alive()
 
 def is_monster_alive():
     if monster1.get_health() <= 0:
         print(f"{monster1.get_name()} is dead !")
-        Character.gain_xp(player1, monster1.get_xp_max() / 5)
+        Character.gain_xp(player1, monster1.get_xp_max() / 4)
         Character.set_turn(player1, 1)
         time.sleep(5)
         map_screen()
@@ -160,7 +189,7 @@ def is_monster_alive():
 def is_player_alive():
     if player1.get_health() <= 0:
         print(f"{player1.get_name()} is dead !")
-        time.sleep(2)
+        time.sleep(5)
         sys.exit()
     
 # player_magic()
@@ -174,10 +203,3 @@ while True:
     game_banner()
     screen_menu()
     map_screen()
-
-
-# à faire:
-# créer une fonction pour la magie player_magic()
-# créer une fonction pour les potions player_potions()
-# se déplacer dans la map
-# créer une fonction pour l'inventaire player_inventory()

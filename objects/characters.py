@@ -18,6 +18,7 @@ class Character:
         self.armor = armor
         self.turn = turn
         self.weapon = None
+        self.magic = None
         
     # Getters
     def get_name(self):
@@ -58,6 +59,12 @@ class Character:
     
     def get_turn(self):
         return self.turn
+    
+    def get_weapon(self):
+        return self.weapon
+    
+    def get_magic(self):
+        return self.magic
     
     # Setters
     def set_name(self, name):
@@ -102,15 +109,42 @@ class Character:
     def set_weapon(self, weapon):
         self.weapon = weapon
         
+    def set_magic(self, magic):
+        self.magic = magic
+        
     # Methods
     def attack(self, target):
+        # Min and Max Damage
         damage = random.randint(self.strength-5, self.strength+5)
-        if random.randint(0, 100) <= self.critical:
+        # Armor Reduction
+        damage -= target.armor
+        # Level Difference
+        damage += (self.level - target.level)
+        # Critical Hit Chance - level difference is added to the critical chance
+        if random.randint(0, 100) <= (self.critical + (self.level-target.level)*5):
             damage *= 1.5
             print("Critical Hit !")
+        # Add Weapon Damage
         if self.has_weapon():
             damage += self.weapon.get_damage()
+        # Inflict Damage
         target.damage(int(damage))
+    
+    def magic_attack(self, target):
+        print(f"{self.name} casts {self.magic.get_name()} (Level {self.magic.get_level()})!")
+        # Test if the target is undead
+        if (self.magic.get_name() == "HolyBolt") and (target.get_class_name() == "Wolf"):
+            print((f"{self.get_name()} did no effect to {target.get_name()} !"))
+            return
+        # Min and Max Damage
+        damage = random.randint(self.magic.get_damage()-5, self.magic.get_damage()+5)
+        # Damage Multiplier Based on Level
+        damage = damage * (1.2 ** (self.level - 1))
+        # Apply Damage 
+        target.damage(int(damage))
+        # Consume Mana of the Caster
+        self.mana -= self.magic.get_mana_cost() 
+        print(f"You consumed {self.magic.get_mana_cost()} mana !")
         
     def damage(self, amount):
         self.health -= amount
@@ -134,18 +168,18 @@ class Character:
         self.xp = 0
         self.xp_max *= 1.5
         self.health_max += 20
-        self.health += self.health_max
+        self.health = self.health_max
         self.mana_max += 10
-        self.strength += 1
+        self.mana = self.mana_max
+        self.strength += 3
         if self.level == 5 or self.level == 10 or self.level == 15 or self.level == 20 or self.level == 25 or self.level == 30 or self.level == 35 or self.level == 40 or self.level == 45 or self.level == 50:
             self.critical += 1
             self.armor += 1
-        print(f"Ding! {self.name} is now level {self.level} !")
-        
-    def calc_xp(self):
-        for i in range(1, self.level):
-            self.xp_max *= 1.5
-        return self.xp_max
+        if self.name == "Player":
+            print(f"Ding! {self.name} is now level {self.level} !")
     
     def has_weapon(self):
         return self.weapon is not None
+    
+    def has_magic(self):
+        return self.magic is not None
