@@ -1,7 +1,6 @@
 from objects.characters import Character
 from objects.weapons import Weapon
 from objects.magic import Magic
-from objects.potions import Potion
 import os
 import time
 import sys
@@ -19,15 +18,12 @@ def new_game():
     map_creation()
 
 # Characters Creation (Monsters and Player), Works with the Character class in objects/characters.py
-def character_creation(name, class_name="default", level=1, health=100, health_max=100, mana=0, mana_max=0, xp=0, xp_max=100, strength=15, critical=5, armor=1, turn=1):
+def character_creation(name, class_name="default", level=1, health=100, health_max=100, mana=0, mana_max=0, xp=0, xp_max=100, strength=15, critical=5, armor=1, turn=1, health_potion=0, mana_potion=0):
     if name == "Player":
         global player1
-        player1 = Character("Player", class_name, level, health, health_max, 40, 40, xp_max, xp, strength, critical, armor, turn)
+        player1 = Character("Player", class_name, level, health, health_max, 40, 40, xp_max, xp, strength, critical, armor, turn, 2, 1)
         player1.weapon = Weapon("Sword", 10)
         player1.magic = np.random.choice([Magic("HolyBolt", 35, 1, 20), Magic("Fireball", 25, 1, 15), Magic("Icebolt", 30, 1, 20)])
-        player1.potion = Potion("Health Potion", 40, 0, 2)
-        player1.add_to_inventory(Potion("Health Potion", 40, 0, 2))
-        player1.add_to_inventory(Potion("Mana Potion", 0, 40, 1))
     elif name == "Monster":
         global monster1
         if class_name == "default":
@@ -36,7 +32,7 @@ def character_creation(name, class_name="default", level=1, health=100, health_m
             level = player1.get_level() + np.random.randint(-1, 2)
         elif player1.get_level() == 1:
             level = player1.get_level() + np.random.randint(0, 2)
-        monster1 = Character("Monster", class_name, level, health, health_max, mana, mana_max, xp_max, xp, strength, critical, armor, turn)
+        monster1 = Character("Monster", class_name, level, health, health_max, mana, mana_max, xp_max, xp, strength, critical, armor, turn, health_potion, mana_potion)
         for i in range(0, monster1.get_level()):
             Character.level_up(monster1)
         
@@ -134,11 +130,11 @@ def fight_screen():
         
 # Display the action menu for the fight screen
 def fight_menu():
-    if (player1.has_magic() is not None) and (player1.get_mana() >= player1.magic.get_mana_cost() and (player1.has_potion("Health Potion") or player1.has_potion("Mana Potion"))):
+    if (player1.has_magic() is not None) and (player1.get_mana() >= player1.magic.get_mana_cost() and (player1.get_health_potion() > 0 or player1.get_mana_potion() > 0)):
         print(f"\n1.Attack 2.{player1.magic.get_name()}({player1.magic.get_level()}) 3.Potions 4.Run")
-    elif (player1.has_magic() is not None) and (player1.get_mana() >= player1.magic.get_mana_cost() and (player1.has_potion("Health Potion") or player1.has_potion("Mana Potion")) is False):
+    elif (player1.has_magic() is not None) and (player1.get_mana() >= player1.magic.get_mana_cost() and (player1.get_health_potion() <= 0 or player1.get_mana_potion() <= 0)):
         print(f"\n1.Attack 2.{player1.magic.get_name()}({player1.magic.get_level()}) 3.##### 4.Run")
-    elif (player1.has_potion("Health Potion")) or (player1.has_potion("Mana Potion")):
+    elif (player1.get_health_potion() > 0 or player1.get_mana_potion() > 0):
         print(f"\n1.Attack 2.##### 3.Potion 4.Run")
     else:
         print(f"\n1.Attack 2.##### 3.##### 4.Run")
@@ -151,11 +147,11 @@ def fight_menu():
             turn_test(magic=True)
             break
         if select == "3":
-            if player1.has_potion("Health Potion") and player1.has_potion("Mana Potion"):
+            if player1.get_health_potion() > 0 and player1.get_mana_potion() > 0:
                 print(f"1.HealthPotion 2.ManaPotion 3.Back")
-            elif player1.has_potion("Health Potion") and player1.has_potion("Mana Potion") is False:
+            elif player1.get_health_potion() > 0 and player1.get_mana_potion() <= 0:
                 print(f"1.HealthPotion 2.##### 3.Back")
-            elif player1.has_potion("Health Potion") is False and player1.has_potion("Mana Potion"):
+            elif player1.get_health_potion() <= 0 and player1.get_mana_potion() > 0:
                 print(f"1.##### 2.ManaPotion 3.Back")
             else:
                 print("1.##### 2.##### 3.Back")

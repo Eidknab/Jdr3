@@ -2,7 +2,7 @@ import random
 import time
 
 class Character: 
-    def __init__(self, name, class_name, level, health_max, health, mana_max, mana, xp_max, xp, strength, critical, armor, turn):
+    def __init__(self, name, class_name, level, health_max, health, mana_max, mana, xp_max, xp, strength, critical, armor, turn, health_potion, mana_potion):
         
         # Attributs
         self.name = name
@@ -18,9 +18,10 @@ class Character:
         self.critical = critical
         self.armor = armor
         self.turn = turn
+        self.health_potion = health_potion
+        self.mana_potion = mana_potion
         self.weapon = None
         self.magic = None
-        self.inventory = []
         
     # Getters
     def get_name(self):
@@ -61,6 +62,12 @@ class Character:
     
     def get_turn(self):
         return self.turn
+    
+    def get_health_potion(self):
+        return self.health_potion
+    
+    def get_mana_potion(self):
+        return self.mana_potion
     
     def get_weapon(self):
         return self.weapon
@@ -107,6 +114,12 @@ class Character:
     
     def set_turn(self, turn):
         self.turn = turn
+        
+    def set_health_potion(self, health_potion):
+        self.health_potion = health_potion
+        
+    def set_mana_potion(self, mana_potion):
+        self.mana_potion = mana_potion
         
     def set_weapon(self, weapon):
         self.weapon = weapon
@@ -185,32 +198,18 @@ class Character:
     
     def has_magic(self):
         return self.magic is not None
-    
-    def has_potion(self, potion_name):
-        if self.potion.get_name() == potion_name and self.potion.get_quantity() > 0:
-            return True
-        else:
-            return False
         
-    def use_potion(self, potion_name):
-        if self.has_potion(potion_name):
-            if potion_name == "Health Potion":
-                self.health += self.potion.get_heal_amount()
-                if self.health > self.health_max:
-                    self.health = self.health_max
-                self.potion.set_quantity(self.potion.get_quantity() - 1)
-                print(f"{self.name} has used a {potion_name} !")
-                time.sleep(2)
-            if potion_name == "Mana Potion":
-                self.mana += self.potion.get_mana_amount()
-                if self.mana > self.mana_max:
-                    self.mana = self.mana_max
-                self.potion.set_quantity(self.potion.get_quantity() - 1)
-                print(f"{self.name} has used a {potion_name} !")
-                time.sleep(2)
+    def use_potion(self, potion):
+        if potion == "Health Potion" and self.health_potion > 0:
+            self.health += 50
+            if self.health > self.health_max:
+                self.health = self.health_max
+            self.health_potion -= 1
+        elif potion == "Mana Potion" and self.mana_potion > 0:
+            self.mana += 40
+            if self.mana > self.mana_max:
+                self.mana = self.mana_max
+            self.mana_potion -= 1
         else:
-            print(f"{self.name} does not have any {potion_name} Left !")
-            time.sleep(2)
-            
-    def add_to_inventory(self, potion):
-        self.inventory.append(potion)
+            print("You don't have any potion left !")
+            time.sleep(1)
