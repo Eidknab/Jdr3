@@ -189,8 +189,6 @@ class Character:
         if self.potion.get_name() == potion_name and self.potion.get_quantity() > 0:
             return True
         else:
-            print(f"You don't have any {potion_name} left !")
-            time.sleep(2)
             return False
         
     def use_potion(self, potion_name):
@@ -201,9 +199,14 @@ class Character:
                     self.health = self.health_max
                 self.potion.set_quantity(self.potion.get_quantity() - 1)
                 print(f"{self.name} has used a {potion_name} !")
+                time.sleep(2)
             if potion_name == "Mana Potion":
                 self.mana += self.potion.get_mana_amount()
                 if self.mana > self.mana_max:
                     self.mana = self.mana_max
                 self.potion.set_quantity(self.potion.get_quantity() - 1)
                 print(f"{self.name} has used a {potion_name} !")
+                time.sleep(2)
+        else:
+            print(f"{self.name} does not have any {potion_name} Left !")
+            time.sleep(2)

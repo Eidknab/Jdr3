@@ -25,7 +25,7 @@ def character_creation(name, class_name="default", level=1, health=100, health_m
         player1 = Character("Player", class_name, level, health, health_max, 40, 40, xp_max, xp, strength, critical, armor, turn)
         player1.weapon = Weapon("Sword", 10)
         player1.magic = np.random.choice([Magic("HolyBolt", 35, 1, 20), Magic("Fireball", 25, 1, 15), Magic("Icebolt", 30, 1, 20)])
-        player1.potion = Potion("Health Potion", 40, 0, 1)
+        player1.potion = Potion("Health Potion", 40, 0, 2)
     elif name == "Monster":
         global monster1
         if class_name == "default":
@@ -132,10 +132,14 @@ def fight_screen():
         
 # Display the action menu for the fight screen
 def fight_menu():
-    if (player1.has_magic() is not None) and (player1.get_mana() >= player1.magic.get_mana_cost()):
+    if (player1.has_magic() is not None) and (player1.get_mana() >= player1.magic.get_mana_cost() and (player1.has_potion("Health Potion") or player1.has_potion("Mana Potion"))):
         print(f"\n1.Attack 2.{player1.magic.get_name()}({player1.magic.get_level()}) 3.Potions 4.Run")
+    elif (player1.has_magic() is not None) and (player1.get_mana() >= player1.magic.get_mana_cost() and (player1.has_potion("Health Potion") or player1.has_potion("Mana Potion")) is False):
+        print(f"\n1.Attack 2.{player1.magic.get_name()}({player1.magic.get_level()}) 3.##### 4.Run")
+    elif (player1.has_potion("Health Potion")) or (player1.has_potion("Mana Potion")):
+        print(f"\n1.Attack 2.##### 3.Potion 4.Run")
     else:
-        print(f"\n1.Attack 3.Potions 4.Run")
+        print(f"\n1.Attack 2.##### 3.##### 4.Run")
     while True:
         select = input("? Votre choix : ") 
         if select == "1":
@@ -145,10 +149,27 @@ def fight_menu():
             turn_test(magic=True)
             break
         if select == "3":
-            player1.use_potion("Health Potion")
-            # player1.set_health(player1.get_health() + 40)
-            # if player1.get_health() > player1.get_health_max():
-            #     player1.set_health(player1.get_health_max())
+            if player1.has_potion("Health Potion") and player1.has_potion("Mana Potion"):
+                print(f"1.HealthPotion 2.ManaPotion 3.Back")
+            elif player1.has_potion("Health Potion") and player1.has_potion("Mana Potion") is False:
+                print(f"1.HealthPotion 2.##### 3.Back")
+            elif player1.has_potion("Health Potion") is False and player1.has_potion("Mana Potion"):
+                print(f"1.##### 2.ManaPotion 3.Back")
+            else:
+                print("1.##### 2.##### 3.Back")
+            while True:
+                select = input("? Votre choix : ")
+                if select == "1":
+                    player1.use_potion("Health Potion")
+                    break
+                if select == "2":
+                    player1.use_potion("Mana Potion")
+                    break
+                if select == "3":
+                    fight_screen()
+                    break
+                else:
+                    pass
             break
         if select == "4" or select == "q" or select == "Q":
             map_screen()
