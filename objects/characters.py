@@ -1,4 +1,5 @@
 import random
+import time
 
 class Character: 
     def __init__(self, name, class_name, level, health_max, health, mana_max, mana, xp_max, xp, strength, critical, armor, turn):
@@ -183,3 +184,26 @@ class Character:
     
     def has_magic(self):
         return self.magic is not None
+    
+    def has_potion(self, potion_name):
+        if self.potion.get_name() == potion_name and self.potion.get_quantity() > 0:
+            return True
+        else:
+            print(f"You don't have any {potion_name} left !")
+            time.sleep(2)
+            return False
+        
+    def use_potion(self, potion_name):
+        if self.has_potion(potion_name):
+            if potion_name == "Health Potion":
+                self.health += self.potion.get_heal_amount()
+                if self.health > self.health_max:
+                    self.health = self.health_max
+                self.potion.set_quantity(self.potion.get_quantity() - 1)
+                print(f"{self.name} has used a {potion_name} !")
+            if potion_name == "Mana Potion":
+                self.mana += self.potion.get_mana_amount()
+                if self.mana > self.mana_max:
+                    self.mana = self.mana_max
+                self.potion.set_quantity(self.potion.get_quantity() - 1)
+                print(f"{self.name} has used a {potion_name} !")

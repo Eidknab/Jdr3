@@ -1,6 +1,7 @@
 from objects.characters import Character
 from objects.weapons import Weapon
 from objects.magic import Magic
+from objects.potions import Potion
 import os
 import time
 import sys
@@ -24,6 +25,7 @@ def character_creation(name, class_name="default", level=1, health=100, health_m
         player1 = Character("Player", class_name, level, health, health_max, 40, 40, xp_max, xp, strength, critical, armor, turn)
         player1.weapon = Weapon("Sword", 10)
         player1.magic = Magic("HolyBolt", 30, 1, 20)
+        player1.potion = Potion("Health Potion", 40, 0, 1)
     elif name == "Monster":
         global monster1
         if class_name == "default":
@@ -143,9 +145,10 @@ def fight_menu():
             turn_test(magic=True)
             break
         if select == "3":
-            player1.set_health(player1.get_health() + 40)
-            if player1.get_health() > player1.get_health_max():
-                player1.set_health(player1.get_health_max())
+            player1.use_potion("Health Potion")
+            # player1.set_health(player1.get_health() + 40)
+            # if player1.get_health() > player1.get_health_max():
+            #     player1.set_health(player1.get_health_max())
             break
         if select == "4" or select == "q" or select == "Q":
             map_screen()
