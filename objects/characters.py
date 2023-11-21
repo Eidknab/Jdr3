@@ -20,6 +20,7 @@ class Character:
         self.turn = turn
         self.weapon = None
         self.magic = None
+        self.inventory = []
         
     # Getters
     def get_name(self):
@@ -210,3 +211,6 @@ class Character:
         else:
             print(f"{self.name} does not have any {potion_name} Left !")
             time.sleep(2)
+            
+    def add_to_inventory(self, potion):
+        self.inventory.append(potion)

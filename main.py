@@ -26,6 +26,8 @@ def character_creation(name, class_name="default", level=1, health=100, health_m
         player1.weapon = Weapon("Sword", 10)
         player1.magic = np.random.choice([Magic("HolyBolt", 35, 1, 20), Magic("Fireball", 25, 1, 15), Magic("Icebolt", 30, 1, 20)])
         player1.potion = Potion("Health Potion", 40, 0, 2)
+        player1.add_to_inventory(Potion("Health Potion", 40, 0, 2))
+        player1.add_to_inventory(Potion("Mana Potion", 0, 40, 1))
     elif name == "Monster":
         global monster1
         if class_name == "default":
