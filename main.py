@@ -22,8 +22,8 @@ def character_creation(name, class_name="default", level=1, health=100, health_m
     if name == "Player":
         global player1
         gp = 100
-        player1 = Character("Player", class_name, level, health, health_max, 40, 40, xp_max, xp, strength, critical, armor, turn, 2, 1, gp)
-        player1.weapon = Weapon("Short Sword", 25)
+        player1 = Character("Player", "Knight", level, health, health_max, 40, 40, xp_max, xp, strength, critical, armor, turn, 2, 1, gp)
+        player1.weapon = Weapon("ShortSword", 15)
         player1.magic = np.random.choice([Magic("HolyBolt", 35, 1, 20), Magic("Fireball", 25, 1, 15), Magic("Icebolt", 30, 1, 20)])
     elif name == "Monster":
         global monster1
@@ -111,7 +111,7 @@ def map_menu():
         if select == "2":
             fight_screen()
         if select == "3":
-            print("Not Implemented Yet !")
+            player_inventory()
         if select == "4" or select == "q" or select == "Q":
             sys.exit()
             
@@ -218,10 +218,62 @@ def is_player_alive():
         print(f"{player1.get_name()} is dead !")
         time.sleep(5)
         sys.exit()
-    
-# player_magic()
-# player_potions()
+
 # player_inventory()
+def player_inventory():
+    clear_screen()
+    print(f"|{player1.get_class_name()} Lvl {player1.get_level()}|".center(40))
+    print("".center(40))
+    experience_bar = f"Exp:[{'#' * (player1.get_xp() * 20 // player1.get_xp_max()):<20}]"
+    print(f"{experience_bar}".center(40))
+    health_bar = f"Health:[{'#' * (player1.get_health() * 10 // player1.get_health_max()):<10}]"
+    mana_bar = f"Mana:[{'#' * (player1.get_mana() * 10 // player1.get_mana_max()):<10}]"
+    print(f"{health_bar} {mana_bar}".center(40))
+    print("".center(40))
+    print(f"Strength: {player1.get_strength()}".center(40))
+    print(f"Critical %: {player1.get_critical()}".center(40))
+    print(f"Armor: {player1.get_armor()}".center(40))
+    print("".center(40))
+    try: print(f"Magic: {player1.magic.get_name()} Lvl {player1.magic.get_level()}".center(40))
+    except: print("Magic: #####".center(40))
+    print("".center(40))
+    try: print(f"Weapon: {player1.weapon.get_name()} +{player1.weapon.get_damage()}".center(40))
+    except: print("Weapon: #####".center(40))
+    try: print(f"Shield: {player1.shield.get_damage()}".center(40))
+    except: print("Shield: #####".center(40))
+    print(f"HealthPotion: {player1.get_health_potion()}".center(40))
+    print(f"ManaPotion: {player1.get_mana_potion()}".center(40))
+    print(f"Gold: {player1.get_gp()}".center(40))
+    print("".center(40))
+    inventory_menu()
+    map_screen()
+    
+def inventory_menu():
+    if player1.get_health_potion() > 0 and player1.get_mana_potion() > 0:
+        print("1.HealthPotion 2.ManaPotion 3.BuyThings 4.Back")
+    elif player1.get_health_potion() > 0 and player1.get_mana_potion() <= 0:
+        print("1.HealthPotion 2.##### 3.BuyThings 4.Back")
+    elif player1.get_health_potion() <= 0 and player1.get_mana_potion() > 0:
+        print("1.##### 2.ManaPotion 3.BuyThings 4.Back")
+    else:
+        print("1.##### 2.##### 3.BuyThings 4.Back")
+    while True:
+        select = input("? Votre choix : ")
+        if select == "1":
+            player1.use_potion("Health Potion")
+            player_inventory()
+        if select == "2":
+            player1.use_potion("Mana Potion")
+            player_inventory()
+        if select == "3":
+            print("Not Implemented Yet !")
+            pass
+        if select == "4" or select == "q" or select == "Q":
+            map_screen()
+            break
+        else:
+            pass
+    pass
 # move()
 
 # Main Loop
