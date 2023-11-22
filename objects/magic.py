@@ -4,6 +4,9 @@ class Magic:
         self.damage = damage
         self.level = level
         self.mana_cost = mana_cost
+    
+    def __str__(self):
+        return f"{self.name} {self.damage} {self.level} {self.mana_cost}"
         
     def get_name(self):
         return self.name

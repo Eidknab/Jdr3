@@ -18,11 +18,12 @@ def new_game():
     map_creation()
 
 # Characters Creation (Monsters and Player), Works with the Character class in objects/characters.py
-def character_creation(name, class_name="default", level=1, health=100, health_max=100, mana=0, mana_max=0, xp=0, xp_max=100, strength=15, critical=5, armor=1, turn=1, health_potion=0, mana_potion=0):
+def character_creation(name, class_name="default", level=1, health=100, health_max=100, mana=0, mana_max=0, xp=0, xp_max=100, strength=15, critical=5, armor=1, turn=1, health_potion=0, mana_potion=0, gp=random.randint(1, 20)):
     if name == "Player":
         global player1
-        player1 = Character("Player", class_name, level, health, health_max, 40, 40, xp_max, xp, strength, critical, armor, turn, 2, 1)
-        player1.weapon = Weapon("Sword", 10)
+        gp = 100
+        player1 = Character("Player", class_name, level, health, health_max, 40, 40, xp_max, xp, strength, critical, armor, turn, 2, 1, gp)
+        player1.weapon = Weapon("Short Sword", 25)
         player1.magic = np.random.choice([Magic("HolyBolt", 35, 1, 20), Magic("Fireball", 25, 1, 15), Magic("Icebolt", 30, 1, 20)])
     elif name == "Monster":
         global monster1
@@ -32,9 +33,10 @@ def character_creation(name, class_name="default", level=1, health=100, health_m
             level = player1.get_level() + np.random.randint(-1, 2)
         elif player1.get_level() == 1:
             level = player1.get_level() + np.random.randint(0, 2)
-        monster1 = Character("Monster", class_name, level, health, health_max, mana, mana_max, xp_max, xp, strength, critical, armor, turn, health_potion, mana_potion)
+        monster1 = Character("Monster", class_name, level, health, health_max, mana, mana_max, xp_max, xp, strength, critical, armor, turn, health_potion, mana_potion, gp)
         for i in range(0, monster1.get_level()):
             Character.level_up(monster1)
+            monster1.set_gp(monster1.get_gp() + random.randint(1, 20))
         
 # Create a new map (change the map_size variable to change the size of the map)
 def map_creation():
@@ -172,6 +174,8 @@ def fight_menu():
         if select == "4" or select == "q" or select == "Q":
             map_screen()
             break
+        if select == "5":
+            print(f"test")
         else:
             pass
 
@@ -205,6 +209,7 @@ def is_monster_alive():
         print(f"{monster1.get_name()} is dead !")
         Character.gain_xp(player1, monster1.get_xp_max() / 4)
         Character.set_turn(player1, 1)
+        monster1.gold_drop(player1)
         time.sleep(5)
         map_screen()
         

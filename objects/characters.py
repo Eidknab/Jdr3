@@ -2,7 +2,7 @@ import random
 import time
 
 class Character: 
-    def __init__(self, name, class_name, level, health_max, health, mana_max, mana, xp_max, xp, strength, critical, armor, turn, health_potion, mana_potion):
+    def __init__(self, name, class_name, level, health_max, health, mana_max, mana, xp_max, xp, strength, critical, armor, turn, health_potion, mana_potion, gp):
         
         # Attributs
         self.name = name
@@ -20,6 +20,7 @@ class Character:
         self.turn = turn
         self.health_potion = health_potion
         self.mana_potion = mana_potion
+        self.gp = gp
         self.weapon = None
         self.magic = None
         
@@ -68,6 +69,9 @@ class Character:
     
     def get_mana_potion(self):
         return self.mana_potion
+    
+    def get_gp(self):
+        return self.gp
     
     def get_weapon(self):
         return self.weapon
@@ -121,6 +125,9 @@ class Character:
     def set_mana_potion(self, mana_potion):
         self.mana_potion = mana_potion
         
+    def set_gp(self, gp):
+        self.gp = gp
+        1
     def set_weapon(self, weapon):
         self.weapon = weapon
         
@@ -213,3 +220,7 @@ class Character:
         else:
             print("You don't have any potion left !")
             time.sleep(1)
+            
+    def gold_drop(self, target):
+        target.gp += self.get_gp()
+        print(f"{self.name} has droped {self.get_gp()} gold !")
