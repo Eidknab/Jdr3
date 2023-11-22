@@ -29,12 +29,14 @@ def character_creation(name, class_name="default", level=1, health=100, health_m
         global monster1
         if class_name == "default":
             class_name = np.random.choice(["Wolf", "Zombie", "Skeleton"])
-        if player1.get_level() > 1:
-            level = player1.get_level() + np.random.randint(-1, 2)
+        if player1.get_level() >= 3:
+            level_generator = player1.get_level() + np.random.randint(-2, 3)
+        elif player1.get_level() == 2:
+            level_generator = player1.get_level() + np.random.randint(-1, 3)
         elif player1.get_level() == 1:
-            level = player1.get_level() + np.random.randint(0, 2)
+            level_generator = player1.get_level() + np.random.randint(0, 3)
         monster1 = Character("Monster", class_name, level, health, health_max, mana, mana_max, xp_max, xp, strength, critical, armor, turn, health_potion, mana_potion, gp)
-        for i in range(0, monster1.get_level()):
+        for i in range(0, level_generator-1):
             Character.level_up(monster1)
             monster1.set_gp(monster1.get_gp() + random.randint(1, 20))
         
