@@ -1,8 +1,9 @@
 class Weapon:
     
-    def __init__(self, name, damage):
+    def __init__(self, name, damage, price):
         self.name = name
         self.damage = damage
+        self.price = price
         
     def get_name(self):
         return self.name
@@ -10,10 +11,19 @@ class Weapon:
     def get_damage(self):
         return self.damage
     
+    def get_price(self):
+        return self.price
+    
     def set_name(self, name):
         self.name = name
         
     def set_damage(self, damage):
         self.damage = damage
+        
+    def set_price(self, price):
+        self.price = price
+        
+    def sell_price(self):
+        return self.price / 3
         
     
