@@ -44,7 +44,7 @@ def character_creation(name, class_name="default", level=1, health=100, health_m
 def map_creation():
     global map_size
     global map
-    map_size = 20
+    map_size = 40
     map = [[np.random.choice([".", "#", "$"], p=[0.9, 0.05, 0.05]) for _ in range(map_size)] for _ in range(map_size // 2)]
     for i in range(len(map)):
         for j in range(len(map[i]) - 1):
@@ -56,18 +56,23 @@ def map_creation():
     
 # Display the game banner when needed
 def game_banner():
-    print("_"*20 + "\n")
-    print("  KNIGHT'S QUEST I")
-    print("_"*20 + "\n")
+    print("")
+    print("(-~*·~-.,-[ Knight's Quest ]-,.-~*·~-)".center(40))
+    print("- I -".center(40))
     return
 
 # Display the main menu
 def screen_menu():
-    print("1. New Game")
-    print("2. Quit")
+    print("")
+    print("▬▬ι═══════>".center(40))
+    print("")
+    print("1. New Game".center(40))
+    print("2. Quit    ".center(40))
+    print("")
+    print("<═══════ι▬▬".center(40))
     print("")
     while True:
-        select = input("? Votre choix : ")
+        select = input("?")
         if select == "1":
             new_game()
             break
@@ -76,13 +81,13 @@ def screen_menu():
 
 # Display Characters Stats
 def character_display(name):
-    print("-"*50)
-    print(f"{name.get_name()} {name.get_class_name()} Lvl {name.get_level()} Exp {int(name.get_xp())}/{int(name.get_xp_max())} HP {name.get_health()}/{name.get_health_max()} MP {name.get_mana()}/{name.get_mana_max()}")
-    print(f"Strength {name.get_strength()} Critical {name.get_critical()} Armor {name.get_armor()}")
-    print("-"*50)
+    print("-"*40)
+    print(f"{name.get_name()} {name.get_class_name()} Lvl {name.get_level()} Exp {int(name.get_xp())}/{int(name.get_xp_max())} HP {name.get_health()}/{name.get_health_max()}")
+    print(f"Strength {name.get_strength()} Critical {name.get_critical()} Armor {name.get_armor()} MP {name.get_mana()}/{name.get_mana_max()}")
+    print("-"*40)
 
 # Display VERSUS animation between two characters in a fight
-def display_versus(duration, total_length=50):
+def display_versus(duration, total_length=40):
     word = "VERSUS"
     for i in range(len(word) + 1):
         sys.stdout.write(f"\r{word[:i].center(total_length)}")
@@ -123,6 +128,7 @@ def fight_screen():
     i = 0
     while monster1.get_health() > 0 and player1.get_health() > 0:
         clear_screen()
+        game_banner()
         character_display(player1)
         if i == 0:
             display_versus(1)
@@ -224,6 +230,7 @@ def is_player_alive():
 # player_inventory()
 def player_inventory():
     clear_screen()
+    game_banner()
     print(f"|{player1.get_class_name()} Lvl {player1.get_level()}|".center(40))
     print("".center(40))
     experience_bar = f"Exp:[{'#' * (player1.get_xp() * 20 // player1.get_xp_max()):<20}]"
@@ -276,6 +283,8 @@ def inventory_menu():
         else:
             pass
     pass
+
+# vendor()
 # move()
 
 # Main Loop
