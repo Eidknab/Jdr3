@@ -250,8 +250,14 @@ def player_inventory():
     except: print("Weapon: #####".center(40))
     try: print(f"Shield: {player1.shield.get_damage()}".center(40))
     except: print("Shield: #####".center(40))
-    print(f"HealthPotion: {player1.get_health_potion()}".center(40))
-    print(f"ManaPotion: {player1.get_mana_potion()}".center(40))
+    if player1.get_health_potion() > 1:
+        print(f"HealthPotions: {player1.get_health_potion()}".center(40))
+    else:
+        print(f"HealthPotion: {player1.get_health_potion()}".center(40))
+    if player1.get_mana_potion() > 1:
+        print(f"ManaPotions: {player1.get_mana_potion()}".center(40))
+    else:
+        print(f"ManaPotion: {player1.get_mana_potion()}".center(40))
     print(f"Gold: {player1.get_gp()}".center(40))
     print("".center(40))
     inventory_menu()
