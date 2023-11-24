@@ -60,8 +60,8 @@ def map_creation():
     for i in range(len(map)):
         for j in range(len(map[i]) - 1):
             if map[i][j] == "$":
-                map[i][j-1] = "!"
-                map[i][j+1] = "!"
+                map[i][j-1] = "|"
+                map[i][j+1] = "|"
                 map[i-1][j] = "_"
     map[np.random.randint(map_size // 2)][np.random.randint(map_size)] = "@"
     
@@ -570,24 +570,31 @@ def load_game():
     return
 
 def move(stdscr):
-    x, y = get_position()
+    if 'player_x' not in globals() or 'player_y' not in globals():
+        global player_x, player_y
+        player_x, player_y = get_position()
     stdscr.addstr("\n")
     stdscr.addstr("(-~*·~-.,-[ Knight's Quest ]-,.-~*·~-)\n")
     stdscr.addstr("\t\t- I -\n")
     stdscr.addstr("\n")
     map_display(stdscr)
+    stdscr.addstr("@=Player #=Enemy $=Chest |=Walls Q.Back\n")
+    stdscr.addstr("This part isn't fully implemented yet, you can move with the arrow keys.")
     while True:
         key = stdscr.getch()
-        stdscr.addstr(y, x, " ")
-        if key == curses.KEY_UP:
-            y -= 1
-        elif key == curses.KEY_DOWN:
-            y += 1
-        elif key == curses.KEY_RIGHT:
-            x += 1
-        elif key == curses.KEY_LEFT:
-            x -= 1
-        stdscr.addstr(y, x, "@")
+        stdscr.addstr(player_y, player_x, " ")
+        if key == curses.KEY_UP and player_y > 4:
+            player_y -= 1
+        elif key == curses.KEY_DOWN and player_y < ((map_size // 2) + 3):
+            player_y += 1
+        elif key == curses.KEY_RIGHT and player_x < (map_size - 1):
+            player_x += 1
+        elif key == curses.KEY_LEFT and player_x > 0:
+            player_x -= 1
+        elif key == ord("q"):
+            stdscr.clear()
+            break
+        stdscr.addstr(player_y, player_x, "@")
         stdscr.refresh()
 # move()
 # Update magic possibilities
