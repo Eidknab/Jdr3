@@ -2,6 +2,8 @@ from objects.shields import Shield
 from objects.characters import Character
 from objects.weapons import Weapon
 from objects.magic import Magic
+from pathlib import Path
+import json
 import os
 import time
 import sys
@@ -75,6 +77,7 @@ def screen_menu():
     print("▬▬ι═══════>".center(40))
     print("")
     print("1. New Game".center(40))
+    print("2. Load Game".center(40))
     print("Q. Quit    ".center(40))
     print("")
     print("<═══════ι▬▬".center(40))
@@ -84,7 +87,10 @@ def screen_menu():
         if select == "1":
             new_game()
             break
-        if select == "2" or select == "q" or select == "Q":
+        if select == "2":
+            load_game()
+            pass
+        if select == "3" or select == "q" or select == "Q":
             sys.exit()
 
 # Display Characters Stats
@@ -120,7 +126,7 @@ def map_screen():
     
 # Display the menu for the map screen
 def map_menu():
-    print("\n1.Move 2.Fight 3.Inventory Q.Quit")
+    print("\n1.Move 2.Fight 3.Inventory 4.Save Q.Quit")
     while True:
         select = input("? Votre choix : ") 
         if select == "1":
@@ -129,7 +135,9 @@ def map_menu():
             fight_screen()
         if select == "3":
             player_inventory()
-        if select == "4" or select == "q" or select == "Q":
+        if select == "4":
+            save_game()
+        if select == "5" or select == "q" or select == "Q":
             sys.exit()
             
 # Create a new monster and start a fight screen
@@ -447,11 +455,61 @@ def vendor_inventory():
 def calculate_health_percentage(player):
     return (player.get_health() / player.get_health_max()) * 100
 
+def save_game():
+    save_dir = Path("save")
+    save_dir.mkdir(exist_ok=True)
+    save_file = save_dir / "save.json"
+    if save_file.exists():
+        while True:
+            select = input("A save already exists. Overwrite? (o/n) ")
+            if select == "o" or select == "O" or select == "1":
+                break
+            if select == "n" or select == "N" or select == "2":
+                return
+            else:
+                pass
+    try: wp_data = f"{player1.weapon.get_name()}, {player1.weapon.get_damage()}, {player1.weapon.get_price()}"
+    except: wp_data = "None"
+    try: mg_data = f"{player1.magic.get_name()}, {player1.magic.get_damage()}, {player1.magic.get_mana_cost()}, {player1.magic.get_level()}"
+    except: mg_data = "None"
+    try: sh_data = f"{player1.shield.get_name()}, {player1.shield.get_armor()}, {player1.shield.get_block()}, {player1.shield.get_price()}"
+    except: sh_data = "None"
+    data = {
+        "name": player1.get_name(),
+        "class_name": player1.get_class_name(),
+        "level": player1.get_level(),
+        "health": player1.get_health(),
+        "health_max": player1.get_health_max(),
+        "mana": player1.get_mana(),
+        "mana_max": player1.get_mana_max(),
+        "xp": player1.get_xp(),
+        "xp_max": player1.get_xp_max(),
+        "strength": player1.get_strength(),
+        "critical": player1.get_critical(),
+        "armor": player1.get_armor(),
+        "turn": player1.get_turn(),
+        "health_potion": player1.get_health_potion(),
+        "mana_potion": player1.get_mana_potion(),
+        "gp": player1.get_gp(),
+        "weapon": wp_data,
+        "magic": mg_data,
+        "shield": sh_data,
+    }
+    with save_file.open("w") as f:
+        json.dump(data, f, indent=4)
+    print("Game saved ! Game/Save.json")
+    return
+
+def load_game():
+    print("Not Implemented Yet !")
+    pass
+
+
+# loading system
 # move()
 # Update magic possibilities
 # Monster can drop very rare loots
 # add boss monster each 5 levels
-# saving system
 
 # Main Loop
 while True:
