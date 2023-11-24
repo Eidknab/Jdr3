@@ -483,8 +483,8 @@ def save_game():
     save_file = save_dir / "save.json"
     if save_file.exists():
         while True:
-            select = input("A save already exists. Overwrite? (o/n) ")
-            if select == "o" or select == "O" or select == "1":
+            select = input("A save already exists. Overwrite? (y/n) ")
+            if select == "y" or select == "Y" or select == "1":
                 break
             if select == "n" or select == "N" or select == "2":
                 return
@@ -520,6 +520,7 @@ def save_game():
     with save_file.open("w") as f:
         json.dump(data, f, indent=4)
     print("Game saved ! save/save.json")
+    time.sleep(2)
     return
 
 # Load a game from the save file (save/save.json)
