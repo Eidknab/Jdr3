@@ -69,7 +69,7 @@ def get_position():
     for i in range(len(map)):
         for j in range(len(map[i])):
             if map[i][j] == "@":
-                return j, i+4
+                return j, i
     return None, None
     
 # Display the game banner when needed
@@ -77,9 +77,8 @@ def game_banner(stdscr=None):
     if stdscr is not None:
         pass
     else:
-        print("")
         print("(-~*·~-.,-[ Knight's Quest ]-,.-~*·~-)".center(40))
-        print("- I -\n".center(40))
+        print("- I -".center(40))
     return
 
 # Display the main menu
@@ -142,11 +141,12 @@ def map_screen():
     
 # Display the menu for the map screen
 def map_menu():
-    print("\n1.Move 2.Fight 3.Inventory 4.Save Q.Quit")
+    print("\n1.Move 2.Fight 3.Inventory 4.Save Q.Quit",end=" ")
     while True:
-        select = input("? Votre choix : ") 
+        select = input("?") 
         if select == "1":
             curses.wrapper(move)
+            map_screen()
         if select == "2":
             fight_screen()
         if select == "3":
@@ -155,6 +155,8 @@ def map_menu():
             save_game()
         if select == "5" or select == "q" or select == "Q":
             sys.exit()
+        else:
+            map_screen()
             
 # Create a new monster and start a fight screen
 def fight_screen():
@@ -573,19 +575,17 @@ def move(stdscr):
     if 'player_x' not in globals() or 'player_y' not in globals():
         global player_x, player_y
         player_x, player_y = get_position()
-    stdscr.addstr("\n")
     stdscr.addstr("(-~*·~-.,-[ Knight's Quest ]-,.-~*·~-)\n")
     stdscr.addstr("\t\t- I -\n")
-    stdscr.addstr("\n")
     map_display(stdscr)
     stdscr.addstr("@=Player #=Enemy $=Chest |=Walls Q.Back\n")
     stdscr.addstr("This part isn't fully implemented yet, you can move with the arrow keys.")
     while True:
         key = stdscr.getch()
         stdscr.addstr(player_y, player_x, " ")
-        if key == curses.KEY_UP and player_y > 4:
+        if key == curses.KEY_UP and player_y > 2:
             player_y -= 1
-        elif key == curses.KEY_DOWN and player_y < ((map_size // 2) + 3):
+        elif key == curses.KEY_DOWN and player_y < ((map_size // 2)+1):
             player_y += 1
         elif key == curses.KEY_RIGHT and player_x < (map_size - 1):
             player_x += 1
