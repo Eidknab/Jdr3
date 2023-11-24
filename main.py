@@ -468,11 +468,11 @@ def save_game():
                 return
             else:
                 pass
-    try: wp_data = f"{player1.weapon.get_name()}, {player1.weapon.get_damage()}, {player1.weapon.get_price()}"
+    try: wp_data = f"{player1.weapon}"
     except: wp_data = "None"
-    try: mg_data = f"{player1.magic.get_name()}, {player1.magic.get_damage()}, {player1.magic.get_mana_cost()}, {player1.magic.get_level()}"
+    try: mg_data = f"{player1.magic}"
     except: mg_data = "None"
-    try: sh_data = f"{player1.shield.get_name()}, {player1.shield.get_armor()}, {player1.shield.get_block()}, {player1.shield.get_price()}"
+    try: sh_data = f"{player1.shield}"
     except: sh_data = "None"
     data = {
         "name": player1.get_name(),
@@ -497,15 +497,57 @@ def save_game():
     }
     with save_file.open("w") as f:
         json.dump(data, f, indent=4)
-    print("Game saved ! Game/Save.json")
+    print("Game saved ! save/save.json")
     return
 
 def load_game():
-    print("Not Implemented Yet !")
-    pass
+    global player1
+    with open("save/save.json", "r") as f:
+        data = json.load(f)
+    print("Loading atrributes...", end="")
+    time.sleep(1)
+    player1 = Character(data["name"], data["class_name"], data["level"], data["health_max"], data["health"], data["mana_max"], data["mana"], data["xp_max"], data["xp"], data["strength"], data["critical"], data["armor"], data["turn"], data["health_potion"], data["mana_potion"], data["gp"])
+    print("Done !")
+    
+    print("Loading weapon, magic and shield...")
+    time.sleep(.5)
+    if data["weapon"] == "None":
+        player1.weapon = None
+        print("No weapon in inventory.")
+    else: 
+        wp_name = str(data["weapon"].split(",")[0])
+        wp_damage = int(data["weapon"].split(",")[1])
+        wp_price = int(data["weapon"].split(",")[2])
+        player1.weapon = Weapon(wp_name, wp_damage, wp_price)
+        print(f"{player1.weapon} loaded !")
+    time.sleep(.5)
+    if data["magic"] == "None":
+        player1.magic = None
+        print("No spells.")
+    else:
+        mg_name = str(data["magic"].split(",")[0])
+        mg_damage = int(data["magic"].split(",")[1])
+        mg_level = int(data["magic"].split(",")[2])
+        mg_mana_cost = int(data["magic"].split(",")[3])
+        player1.magic = Magic(mg_name, mg_damage, mg_level, mg_mana_cost)
+        print(f"{player1.magic} loaded !")
+    time.sleep(.5)
+    if data["shield"] == "None":
+        player1.shield = None
+        print("No shield in inventory.")
+    else: 
+        sh_name = str(data["shield"].split(",")[0])
+        sh_armor = int(data["shield"].split(",")[1])
+        sh_block = int(data["shield"].split(",")[2])
+        sh_price = int(data["shield"].split(",")[3])
+        player1.shield = Shield(sh_name, sh_armor, sh_block, sh_price)
+        print(f"{player1.shield} loaded !")
+    time.sleep(5)
 
+    map_creation()
+    map_screen()
+    return
 
-# loading system
 # move()
 # Update magic possibilities
 # Monster can drop very rare loots

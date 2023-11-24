@@ -4,6 +4,9 @@ class Shield:
         self.armor = armor
         self.block = block
         self.price = price
+    
+    def __str__(self):
+        return f"{self.name}, {self.armor}, {self.block}, {self.price}"
         
     def get_name(self):
         return self.name

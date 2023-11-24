@@ -5,6 +5,9 @@ class Weapon:
         self.damage = damage
         self.price = price
         
+    def __str__(self):
+        return f"{self.name}, {self.damage}, {self.price}"
+        
     def get_name(self):
         return self.name
     
