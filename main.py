@@ -446,7 +446,12 @@ def vendor_inventory():
     
 def calculate_health_percentage(player):
     return (player.get_health() / player.get_health_max()) * 100
+
 # move()
+# Update magic possibilities
+# Monster can drop very rare loots
+# add boss monster each 5 levels
+# saving system
 
 # Main Loop
 while True:
