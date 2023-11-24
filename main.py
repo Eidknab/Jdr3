@@ -3,6 +3,7 @@ from objects.characters import Character
 from objects.weapons import Weapon
 from objects.magic import Magic
 from pathlib import Path
+import curses
 import json
 import os
 import time
@@ -64,11 +65,21 @@ def map_creation():
                 map[i-1][j] = "_"
     map[np.random.randint(map_size // 2)][np.random.randint(map_size)] = "@"
     
+def get_position():
+    for i in range(len(map)):
+        for j in range(len(map[i])):
+            if map[i][j] == "@":
+                return j, i+4
+    return None, None
+    
 # Display the game banner when needed
-def game_banner():
-    print("")
-    print("(-~*·~-.,-[ Knight's Quest ]-,.-~*·~-)".center(40))
-    print("- I -".center(40))
+def game_banner(stdscr=None):
+    if stdscr is not None:
+        pass
+    else:
+        print("")
+        print("(-~*·~-.,-[ Knight's Quest ]-,.-~*·~-)".center(40))
+        print("- I -\n".center(40))
     return
 
 # Display the main menu
@@ -112,10 +123,15 @@ def display_versus(duration, total_length=40):
     print()
 
 # Display the map stored in the map list variable
-def map_display():
-    for row in map:
-        print(''.join(row))
-    return
+def map_display(stdscr=None):
+    if stdscr is not None:
+        for row in map:
+            stdscr.addstr(''.join(row) + "\n")
+        return
+    else:
+        for row in map:
+            print(''.join(row))
+        return
 
 # Display the map screen with the map and the menu
 def map_screen():
@@ -130,7 +146,7 @@ def map_menu():
     while True:
         select = input("? Votre choix : ") 
         if select == "1":
-            print("Not Implemented Yet !")
+            curses.wrapper(move)
         if select == "2":
             fight_screen()
         if select == "3":
@@ -553,6 +569,26 @@ def load_game():
     map_screen()
     return
 
+def move(stdscr):
+    x, y = get_position()
+    stdscr.addstr("\n")
+    stdscr.addstr("(-~*·~-.,-[ Knight's Quest ]-,.-~*·~-)\n")
+    stdscr.addstr("\t\t- I -\n")
+    stdscr.addstr("\n")
+    map_display(stdscr)
+    while True:
+        key = stdscr.getch()
+        stdscr.addstr(y, x, " ")
+        if key == curses.KEY_UP:
+            y -= 1
+        elif key == curses.KEY_DOWN:
+            y += 1
+        elif key == curses.KEY_RIGHT:
+            x += 1
+        elif key == curses.KEY_LEFT:
+            x -= 1
+        stdscr.addstr(y, x, "@")
+        stdscr.refresh()
 # move()
 # Update magic possibilities
 # Monster can drop very rare loots
