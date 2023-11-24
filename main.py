@@ -1,3 +1,4 @@
+from objects.shields import Shield
 from objects.characters import Character
 from objects.weapons import Weapon
 from objects.magic import Magic
@@ -42,8 +43,9 @@ def character_creation(name, class_name="default", level=1, health=100, health_m
     elif name == "Vendor":
         global vendor1
         vendor1 = Character("Vendor", "Vendor", 50, health, health_max, mana, mana_max, xp_max, xp, 20, critical, 20, turn, random.randint(0,2), random.randint(0,2), random.randint(1, 250))
-        vendor1.weapon = np.random.choice([Weapon("ShortSword", 15, 30), Weapon("LongSword", 20, 50), Weapon("Axe", 25, 75), Weapon("GreatSword", 30, 100)])
+        vendor1.weapon = np.random.choice([Weapon("ShortSword", 15, 30), Weapon("LongSword", 20, 100), Weapon("Axe", 25, 150), Weapon("GreatSword", 30, 300)])
         vendor1.magic = np.random.choice([Magic("HolyBolt", 35, 1, 20), Magic("Fireball", 25, 1, 15), Magic("Icebolt", 30, 1, 20)])
+        vendor1.shield = np.random.choice([Shield("WoodenShield", 1, 10, 60), Shield("IronShield", 3, 15, 120), Shield("SteelShield", 5, 20, 240)])
         vendor1.set_gp(1000)
         
 # Create a new map (change the map_size variable to change the size of the map)
@@ -256,9 +258,9 @@ def player_inventory():
     try: print(f"Magic: {player1.magic.get_name()} Lvl {player1.magic.get_level()}".center(40))
     except: print("Magic: #####".center(40))
     print("".center(40))
-    try: print(f"Weapon: {player1.weapon.get_name()} +{player1.weapon.get_damage()}".center(40))
+    try: print(f"Weapon: {player1.weapon.get_name()} Dmg+{player1.weapon.get_damage()}".center(40))
     except: print("Weapon: #####".center(40))
-    try: print(f"Shield: {player1.shield.get_damage()}".center(40))
+    try: print(f"Shield: {player1.shield.get_name()} Arm+{player1.shield.get_armor()} %Blc+{player1.shield.get_block()}".center(40))
     except: print("Shield: #####".center(40))
     if player1.get_health_potion() > 1:
         print(f"HealthPotions: {player1.get_health_potion()}".center(40))
@@ -268,7 +270,7 @@ def player_inventory():
         print(f"ManaPotions: {player1.get_mana_potion()}".center(40))
     else:
         print(f"ManaPotion: {player1.get_mana_potion()}".center(40))
-    print(f"Gold: {player1.get_gp()}".center(40))
+    print(f"Gold: {int(player1.get_gp())}".center(40))
     print("".center(40))
     inventory_menu()
     map_screen()
@@ -306,31 +308,31 @@ def vendor_inventory():
         game_banner()
         print("".center(40))
         print(f"|{vendor1.get_class_name()} Lvl {vendor1.get_level()}|".center(40))
-        print("".center(40))
+        print(("-"*40).center(40))
         print("BUY THINGS".center(40))
-        try: print(f"1. Weapon: {vendor1.weapon.get_name()} +{vendor1.weapon.get_damage()} {vendor1.weapon.get_price()} gp".center(40))
+        try: print(f"1. Weapon: {vendor1.weapon.get_name()} Dmg+{vendor1.weapon.get_damage()} {vendor1.weapon.get_price()}gp".center(40))
         except: print("".center(40))
-        try: print(f"2. Shield: {vendor1.shield.get_name()} +{vendor1.shield.get_armor()} {vendor1.shield.get_price()} gp".center(40))
+        try: print(f"2. Shield: {vendor1.shield.get_name()} Arm+{vendor1.shield.get_armor()} %Blc+{vendor1.shield.get_block()} {vendor1.shield.get_price()}gp".center(40))
         except: print("".center(40))
-        try: print(f"3. HealthPotion: {vendor1.get_health_potion()} 20 gp".center(40))
+        try: print(f"3. HealthPotion: {vendor1.get_health_potion()} 20gp".center(40))
         except: print("".center(40))
-        try: print(f"4. ManaPotion: {vendor1.get_mana_potion()} 20 gp".center(40))
+        try: print(f"4. ManaPotion: {vendor1.get_mana_potion()} 20gp".center(40))
         except: print("".center(40))
-        print("".center(40))
+        print(("-"*20).center(40))
         print("SELL THINGS".center(40))
-        try: print(f"5. Weapon: {player1.weapon.get_name()} +{player1.weapon.get_damage()} {int(player1.weapon.sell_price())} gp".center(40))
+        try: print(f"5. Weapon: {player1.weapon.get_name()} Dmg+{player1.weapon.get_damage()} {int(player1.weapon.sell_price())}gp".center(40))
         except: print("".center(40))
-        try: print(f"6. Shield: {player1.shield.get_name()} +{player1.shield.get_armor()} {int(player1.shield.sell_price())} gp".center(40))
+        try: print(f"6. Shield: {player1.shield.get_name()} Arm+{player1.shield.get_armor()} %Blc+{player1.shield.get_block()} {int(player1.shield.sell_price())}gp".center(40))
         except: print("".center(40))
-        try: print(f"7. HealthPotion: {player1.get_health_potion()} 10 gp".center(40))
+        try: print(f"7. HealthPotion: {player1.get_health_potion()} 10gp".center(40))
         except: print("".center(40))
-        try: print(f"8. ManaPotion: {player1.get_mana_potion()} 10 gp".center(40))
+        try: print(f"8. ManaPotion: {player1.get_mana_potion()} 10gp".center(40))
         except: print("".center(40))
-        print("".center(40))
+        print(("-"*20).center(40))
         print("Q. Back".center(40))
         print("".center(40))
-        print(f"Gold: {player1.get_gp()}".center(40))
-        print("".center(40))
+        print(f"$ Gold: {int(player1.get_gp())} $".center(40))
+        print(("-"*40).center(40))
         print("Hey ! Do you want to buy something ?".center(40))
         while True:
             select = input("? Votre choix : ")
@@ -339,6 +341,7 @@ def vendor_inventory():
                     player1.set_gp(player1.get_gp() - vendor1.weapon.get_price())
                     player1.weapon = vendor1.weapon
                     print(f"You bought {vendor1.weapon.get_name()} !")
+                    vendor1.weapon = None
                     time.sleep(2)
                     vendor_inventory()
                 else:
@@ -350,6 +353,8 @@ def vendor_inventory():
                     player1.set_gp(player1.get_gp() - vendor1.shield.get_price())
                     player1.shield = vendor1.shield
                     print(f"You bought {vendor1.shield.get_name()} !")
+                    vendor1.shield = None
+
                     time.sleep(2)
                     vendor_inventory()
                 else:

@@ -21,6 +21,7 @@ class Character:
         self.health_potion = health_potion
         self.mana_potion = mana_potion
         self.gp = gp
+        self.shield = None
         self.weapon = None
         self.magic = None
         
@@ -72,6 +73,9 @@ class Character:
     
     def get_gp(self):
         return self.gp
+    
+    def get_shield(self):
+        return self.shield
     
     def get_weapon(self):
         return self.weapon
@@ -127,7 +131,10 @@ class Character:
         
     def set_gp(self, gp):
         self.gp = gp
-        1
+        
+    def set_shield(self, shield):
+        self.shield = shield
+        
     def set_weapon(self, weapon):
         self.weapon = weapon
         
@@ -140,6 +147,14 @@ class Character:
         damage = random.randint(self.strength-5, self.strength+5)
         # Armor Reduction
         damage -= target.armor
+        if target.has_shield():
+            # Block Chance
+            if random.randint(0, 100) <= target.shield.get_block():
+                damage = 0
+                print(f"{target.name} has blocked the attack !")
+                return
+            # Armor Reduction from Shield
+            damage -= target.shield.get_armor()
         # Level Difference
         damage += (self.level - target.level)
         # Critical Hit Chance - level difference is added to the critical chance
@@ -202,6 +217,9 @@ class Character:
     
     def has_weapon(self):
         return self.weapon is not None
+    
+    def has_shield(self):
+        return self.shield is not None
     
     def has_magic(self):
         return self.magic is not None
