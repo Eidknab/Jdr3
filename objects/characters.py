@@ -142,6 +142,7 @@ class Character:
         self.magic = magic
         
     # Methods
+    # Physical Attack applied to the target
     def attack(self, target):
         # Min and Max Damage
         damage = random.randint(self.strength-5, self.strength+5)
@@ -167,6 +168,7 @@ class Character:
         # Inflict Damage
         target.damage(int(damage))
     
+    # Magic Attack applied to the target
     def magic_attack(self, target):
         print(f"{self.name} casts {self.magic.get_name()} (Level {self.magic.get_level()})!")
         # Test if the target is undead
@@ -186,11 +188,12 @@ class Character:
     def damage(self, amount):
         self.health -= amount
         print(f"{self.name} has taken {amount} damage !")
-        
+    
     def heal(self, amount):
         self.health += amount
         print(f"{self.name} has healed {amount} health !")
     
+    # Gain XP and Level Up if XP Max is reached
     def gain_xp(self, amount):
         self.xp += int(amount)
         if self.xp >= self.xp_max and self.level < 50:
@@ -200,6 +203,7 @@ class Character:
         if self.level == 50 and self.xp >= self.xp_max:
             self.xp = self.xp_max
     
+    # Level Up and upgrade stats
     def level_up(self):
         self.level += 1
         self.xp = 0
@@ -215,15 +219,15 @@ class Character:
         if self.name == "Player":
             print(f"Ding! {self.name} is now level {self.level} !")
     
+    # test if the character has a weapon, a shield or a magic
     def has_weapon(self):
         return self.weapon is not None
-    
     def has_shield(self):
         return self.shield is not None
-    
     def has_magic(self):
         return self.magic is not None
-        
+    
+    # Use potion parameter is the potion name
     def use_potion(self, potion):
         if potion == "Health Potion" and self.health_potion > 0:
             self.health += 50
@@ -239,6 +243,7 @@ class Character:
             print("You don't have any potion left !")
             time.sleep(1)
             
+    # give gold to the target
     def gold_drop(self, target):
         target.gp += self.get_gp()
         print(f"{self.name} has droped {self.get_gp()} gold !")

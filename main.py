@@ -205,6 +205,7 @@ def fight_menu():
         else:
             pass
 
+# Test who attack first, some monsters can have initiative
 def turn_test(magic):
     if player1.get_turn() >= monster1.get_turn():
         if magic is False:
@@ -230,6 +231,7 @@ def turn_test(magic):
         time.sleep(3)
         is_monster_alive()
 
+# Test if the monster is alive and give xp gp to the player
 def is_monster_alive():
     if monster1.get_health() <= 0:
         print(f"{monster1.get_name()} is dead !")
@@ -239,7 +241,8 @@ def is_monster_alive():
         character_creation("Vendor")
         time.sleep(5)
         map_screen()
-        
+
+# Test if the player is alive
 def is_player_alive():
     if player1.get_health() <= 0:
         print(f"{player1.get_name()} is dead !")
@@ -455,6 +458,7 @@ def vendor_inventory():
 def calculate_health_percentage(player):
     return (player.get_health() / player.get_health_max()) * 100
 
+# Save the game in a json file (save/save.json)
 def save_game():
     save_dir = Path("save")
     save_dir.mkdir(exist_ok=True)
@@ -500,6 +504,7 @@ def save_game():
     print("Game saved ! save/save.json")
     return
 
+# Load a game from the save file (save/save.json)
 def load_game():
     global player1
     with open("save/save.json", "r") as f:
