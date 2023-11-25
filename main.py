@@ -582,21 +582,26 @@ def move(stdscr):
     stdscr.addstr("@=Player #=Enemy $=Chest |=Walls Q.Back\n")
     stdscr.addstr("This part isn't fully implemented yet, you can move with the arrow keys.")
     while True:
+        player_x, player_y = get_position()
         key = stdscr.getch()
-        stdscr.addstr(player_y, player_x, " ")
-        if key == curses.KEY_UP and player_y > 2:
+        stdscr.addstr((player_y+2), player_x, " ")
+        map[player_y][player_x] = " "
+        if key == curses.KEY_UP and player_y > 0 and map[player_y-1][player_x] not in ["|", "_"]:
             player_y -= 1
-        elif key == curses.KEY_DOWN and player_y < ((map_size // 2)+1):
+        elif key == curses.KEY_DOWN and (player_y) < (map_size // 2 - 1) and map[player_y+1][player_x] not in ["|", "_"]:
             player_y += 1
-        elif key == curses.KEY_RIGHT and player_x < (map_size - 1):
+        elif key == curses.KEY_RIGHT and player_x < (map_size - 1) and map[player_y][player_x+1] not in ["|", "_"]:
             player_x += 1
-        elif key == curses.KEY_LEFT and player_x > 0:
+        elif key == curses.KEY_LEFT and player_x > 0 and map[player_y][player_x-1] not in ["|", "_"]:
             player_x -= 1
         elif key == ord("q"):
+            map[player_y][player_x] = "@" 
             stdscr.clear()
             break
-        stdscr.addstr(player_y, player_x, "@")
+        stdscr.addstr((player_y+2), player_x, "@")
+        map[player_y][player_x] = "@" 
         stdscr.refresh()
+        
 # move()
 # Update magic possibilities
 # Monster can drop very rare loots
