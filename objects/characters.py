@@ -178,7 +178,7 @@ class Character:
         # Min and Max Damage
         damage = random.randint(self.magic.get_damage()-5, self.magic.get_damage()+5)
         # Damage Multiplier Based on Level
-        damage = damage * (1.2 ** (self.level - 1))
+        damage = damage * (1.1 ** (self.level - 1))
         # Apply Damage 
         target.damage(int(damage))
         # Consume Mana of the Caster

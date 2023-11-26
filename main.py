@@ -28,7 +28,7 @@ def character_creation(name, class_name="default", level=1, health=100, health_m
         gp = 100
         player1 = Character("Player", "Knight", level, health, health_max, 40, 40, xp_max, xp, strength, critical, armor, turn, 2, 1, gp)
         player1.weapon = Weapon("ShortSword", 15, 30)
-        player1.magic = np.random.choice([Magic("HolyBolt", 35, 1, 20), Magic("Fireball", 25, 1, 15), Magic("Icebolt", 30, 1, 20)])
+        player1.magic = np.random.choice([Magic("HolyBolt", 35, 1, 20), Magic("FireBall", 25, 1, 15), Magic("IceBolt", 30, 1, 20)])
     elif name == "Monster":
         global monster1
         if class_name == "default":
@@ -141,19 +141,17 @@ def map_screen():
     
 # Display the menu for the map screen
 def map_menu():
-    print("\n1.Move 2.Fight 3.Inventory 4.Save Q.Quit",end=" ")
+    print("\n1.Move 2.Inventory 3.Save Q.Quit",end=" ")
     while True:
         select = input("?") 
-        if select == "1":
+        if select == "1" or select == "m" or select == "M":
+            clear_screen()
             curses.wrapper(move)
-            map_screen()
-        if select == "2":
-            fight_screen()
-        if select == "3":
+        if select == "2" or select == "i" or select == "I":
             player_inventory()
-        if select == "4":
+        if select == "3" or select == "s" or select == "S":
             save_game()
-        if select == "5" or select == "q" or select == "Q":
+        if select == "4" or select == "q" or select == "Q":
             sys.exit()
         else:
             map_screen()
@@ -177,9 +175,9 @@ def fight_screen():
 # Display the action menu for the fight screen
 def fight_menu():
     if (player1.has_magic() is not None) and (player1.get_mana() >= player1.magic.get_mana_cost() and (player1.get_health_potion() > 0 or player1.get_mana_potion() > 0)):
-        print(f"\n1.Attack 2.{player1.magic.get_name()}({player1.magic.get_level()}) 3.Potions Q.Run")
+        print(f"\n1.Attack 2.{player1.magic.get_name()}({player1.magic.get_level()})({player1.magic.get_mana_cost()}) 3.Potions Q.Run")
     elif (player1.has_magic() is not None) and (player1.get_mana() >= player1.magic.get_mana_cost() and (player1.get_health_potion() <= 0 or player1.get_mana_potion() <= 0)):
-        print(f"\n1.Attack 2.{player1.magic.get_name()}({player1.magic.get_level()}) 3.##### Q.Run")
+        print(f"\n1.Attack 2.{player1.magic.get_name()}({player1.magic.get_level()})({player1.magic.get_mana_cost()}) 3.##### Q.Run")
     elif (player1.get_health_potion() > 0 or player1.get_mana_potion() > 0):
         print(f"\n1.Attack 2.##### 3.Potion Q.Run")
     else:
@@ -209,15 +207,29 @@ def fight_menu():
                 if select == "2":
                     player1.use_potion("Mana Potion")
                     break
-                if select == "3":
+                if select == "3" or select == "q" or select == "Q":
                     fight_screen()
                     break
                 else:
                     pass
             break
         if select == "4" or select == "q" or select == "Q":
-            map_screen()
-            break
+            i = random.randint(1, 3)
+            if monster1.get_turn() == 2:
+                monster1.attack(player1)
+                monster1.set_turn(1)
+                print("You failed to run away !")
+                time.sleep(2)
+            if i == 3:
+                print("You ran away !")
+                time.sleep(2)
+                clear_screen()
+                curses.wrapper(move)
+            else:
+                monster1.set_turn(2)
+                print("You failed to run away !")
+                time.sleep(2)
+            pass
         if select == "5":
             print(f"test")
         else:
@@ -257,9 +269,9 @@ def is_monster_alive():
         Character.set_turn(player1, 1)
         monster1.gold_drop(player1)
         character_creation("Vendor")
-        time.sleep(5)
-        map_screen()
-
+        time.sleep(4)
+        curses.wrapper(move)
+        
 # Test if the player is alive
 def is_player_alive():
     if player1.get_health() <= 0:
@@ -282,9 +294,10 @@ def player_inventory():
     print("".center(40))
     print(f"Strength: {player1.get_strength()}".center(40))
     print(f"Critical %: {player1.get_critical()}".center(40))
-    print(f"Armor: {player1.get_armor()}".center(40))
+    try: print(f"Armor: {player1.get_armor()} +{player1.shield.get_armor()}".center(40))
+    except: print(f"Armor: {player1.get_armor()}".center(40))
     print("".center(40))
-    try: print(f"Magic: {player1.magic.get_name()} Lvl {player1.magic.get_level()}".center(40))
+    try: print(f"Magic: {player1.magic.get_name()} Lvl {player1.magic.get_level()} Dmg {player1.magic.get_damage()} MCost {player1.magic.get_mana_cost()}".center(40)) 
     except: print("Magic: #####".center(40))
     print("".center(40))
     try: print(f"Weapon: {player1.weapon.get_name()} Dmg+{player1.weapon.get_damage()}".center(40))
@@ -580,7 +593,7 @@ def move(stdscr):
     stdscr.addstr("\t\t- I -\n")
     map_display(stdscr)
     stdscr.addstr("@=Player #=Enemy $=Chest |=Walls Q.Back\n")
-    stdscr.addstr("This part isn't fully implemented yet, you can move with the arrow keys.")
+    stdscr.addstr("Move with the arrow keys.")
     while True:
         player_x, player_y = get_position()
         key = stdscr.getch()
@@ -588,24 +601,189 @@ def move(stdscr):
         map[player_y][player_x] = " "
         if key == curses.KEY_UP and player_y > 0 and map[player_y-1][player_x] not in ["|", "_"]:
             player_y -= 1
+            test_map(stdscr)
         elif key == curses.KEY_DOWN and (player_y) < (map_size // 2 - 1) and map[player_y+1][player_x] not in ["|", "_"]:
             player_y += 1
+            test_map(stdscr)
         elif key == curses.KEY_RIGHT and player_x < (map_size - 1) and map[player_y][player_x+1] not in ["|", "_"]:
             player_x += 1
+            test_map(stdscr)
         elif key == curses.KEY_LEFT and player_x > 0 and map[player_y][player_x-1] not in ["|", "_"]:
             player_x -= 1
+            test_map(stdscr)
         elif key == ord("q"):
             map[player_y][player_x] = "@" 
             stdscr.clear()
+            curses.endwin()
+            map_screen()
             break
         stdscr.addstr((player_y+2), player_x, "@")
         map[player_y][player_x] = "@" 
         stdscr.refresh()
+
+def test_map(stdscr):
+    if map[player_y][player_x] == "#":
+        map[player_y][player_x] = "@" 
+        stdscr.clear()
+        curses.endwin()
+        fight_screen()
+        curses.wrapper(move)
+    try: 
+        if map[player_y+1][player_x] == "#" or map[player_y-1][player_x] == "#" or map[player_y][player_x+1] == "#" or map[player_y][player_x-1] == "#":
+            map[player_y][player_x] = "@" 
+            stdscr.clear()
+            curses.endwin()
+            clear_screen()
+            print("A monster just saw you !")
+            time.sleep(2)
+            if map[player_y-1][player_x] == "#":
+                map[player_y-1][player_x] = " "
+            elif map[player_y+1][player_x] == "#":
+                map[player_y+1][player_x] = " "
+            elif map[player_y][player_x-1] == "#":
+                map[player_y][player_x-1] = " "
+            elif map[player_y][player_x+1] == "#":
+                map[player_y][player_x+1] = " "
+            fight_screen()
+    except:
+        pass
+
+    if map[player_y][player_x] == "$":
+        map[player_y][player_x] = "@" 
+        try: map[player_y][player_x-1] = " "
+        except: pass
+        try: map[player_y][player_x+1] = " "
+        except: pass
+        try: map[player_y-1][player_x] = " "
+        except: pass
+        stdscr.clear()
+        curses.endwin()
+        chest()
         
-# move()
-# Update magic possibilities
-# Monster can drop very rare loots
-# add boss monster each 5 levels
+def chest():
+    i = np.random.randint(1, 100)
+    if i == 100:
+        print("You found a legendary weapon !")
+        print("LegendarySword Dmg+50")
+        try: print(f"Pick it up and replace {player1.weapon.get_name()}, {player1.weapon.get_damage()} ? (y/n)", end=" ")
+        except: print("Pick it up ? (y/n)", end=" ")
+        while True:
+            select = input("?")
+            if select == "y" or select == "Y" or select == "1":
+                player1.weapon = Weapon("LegendarySword", 50, 500)
+                break
+            if select == "n" or select == "N" or select == "2":
+                break
+            else:
+                pass
+    if i == 99:
+        print("You found a legendary shield !")
+        print("LegendaryShield Arm+8 %Blc+35")
+        try: print(f"Pick it up and replace {player1.shield.get_name()}, {player1.shield.get_armor()}, {player1.shield.get_block()} ? (y/n)", end=" ")
+        except: print("Pick it up ? (y/n)", end=" ")
+        while True:
+            select = input("?")
+            if select == "y" or select == "Y" or select == "1":
+                player1.shield = Shield("LegendaryShield", 8, 35, 400)
+                break
+            if select == "n" or select == "N" or select == "2":
+                break
+            else:
+                pass
+    if i <= 98 and i >= 97:
+        print("You found a rare weapon !")
+        print("RareSword Dmg+30")
+        try: print(f"Pick it up and replace {player1.weapon.get_name()}, {player1.weapon.get_damage()} ? (y/n)", end=" ")
+        except: print("Pick it up ? (y/n)", end=" ")
+        while True:
+            select = input("?")
+            if select == "y" or select == "Y" or select == "1":
+                player1.weapon = Weapon("RareSword", 30, 300)
+                break
+            if select == "n" or select == "N" or select == "2":
+                break
+            else:
+                pass
+    if i <= 96 and i >= 95:
+        print("You found a rare shield !")
+        print("RareShield Arm+6 %Blc+25")
+        try: print(f"Pick it up and replace {player1.shield.get_name()}, {player1.shield.get_armor()}, {player1.shield.get_block()} ? (y/n)", end=" ")
+        except: print("Pick it up ? (y/n)", end=" ")
+        while True:
+            select = input("?")
+            if select == "y" or select == "Y" or select == "1":
+                player1.shield = Shield("RareShield", 6, 25, 260)
+                break
+            if select == "n" or select == "N" or select == "2":
+                break
+            else:
+                pass
+    if i <= 94 and i >= 93:
+        print("You found a spell !")
+        rare_spell = random.choice([Magic("HolyBolt", 35, 1, 20), Magic("FireBall", 25, 1, 15), Magic("IceBolt", 30, 1, 20), Magic("ChargedBolt", 50, 1, 25)])
+        print(rare_spell)
+        try: print(f"Pick it up and replace {player1.magic.get_name()}, {player1.magic.get_damage()}, {player1.magic.get_mana_cost()} ? (y/n)", end=" ")
+        except: print("Pick it up ? (y/n)", end=" ")
+        while True:
+            select = input("?")
+            if select == "y" or select == "Y" or select == "1":
+                player1.magic = rare_spell
+                break
+            if select == "n" or select == "N" or select == "2":
+                break
+            else:
+                pass
+    if i <= 92 and i >= 91:
+        print("A big magic seems to emerge from the chest, you are now full life and mana !")
+        player1.set_health(player1.get_health_max())
+        player1.set_mana(player1.get_mana_max())
+    if i <= 90 and i >= 80:
+        print("You found 1 Health Potion and 1 Mana Potion !")
+        player1.set_health_potion(player1.get_health_potion() + 1)
+        player1.set_mana_potion(player1.get_mana_potion() + 1)
+    if i <= 70 and i >= 60:
+        if player1.magic.get_level() < player1.get_level():
+            print("A big magic seems to emerge from the chest, your spell is now stronger !")
+            try: 
+                player1.magic.set_damage(player1.magic.get_damage() + 10)
+                player1.magic.set_mana_cost(player1.magic.get_mana_cost() + 5)
+                player1.magic.set_level(player1.magic.get_level() + 1)
+                print(f"{player1.magic.get_name()} is now level {player1.magic.get_level()} Dmg+10 ManaCost+5")
+            except: 
+                player1.magic = random.choice([Magic("HolyBolt", 35, 1, 20), Magic("FireBall", 25, 1, 15), Magic("IceBolt", 30, 1, 20)])
+                print(f"You found a spell named: {player1.magic.get_name()} Lvl 1")
+        else:
+            print("A big magic seems to emerge from the chest, \n but your level is too low to learn more right now !")
+        time.sleep(2)
+    if i <= 60 and i >= 50:
+        print("You found nothing !")
+    if i <= 50 and i >= 40:
+        print("You found a Health Potion !")
+        player1.set_health_potion(player1.get_health_potion() + 1)
+    if i <= 40 and i >= 30:
+        print("You found a Mana Potion !")
+        player1.set_mana_potion(player1.get_mana_potion() + 1)
+    if i <= 30:
+        g = np.random.randint(1, 30)
+        print(f"You found {g} gold !")
+        player1.set_gp(player1.get_gp() + g)
+    if i <= 10:
+        print("A trap has been triggered !")
+        h = np.random.randint(1, 30)
+        player1.set_health(player1.get_health() - h)
+        print(f"You lost {h} health !")
+        is_player_alive()
+    time.sleep(1)
+    print("The walls have disappeared !")
+    time.sleep(3)
+    clear_screen()
+    curses.wrapper(move)
+    
+# To do
+# Better Fight Menu: possibility to use potions in first menu, better stats display.
+# Saving feature for map
+# add boss monster spawn on map each 5 levels or 75% opened chest / killed monsters.
+# kill the boss reset the map.
 
 # Main Loop
 while True:
